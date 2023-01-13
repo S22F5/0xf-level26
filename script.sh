@@ -1,16 +1,15 @@
+#!/bin/bash
 #create filestructure
 mkdir 1
 #download initial image
 wget https://0xf.at/data/tmp/476922fd7e5663e0bfd95ae938cd1150.png -O 1/o.png -q
 #split image into individual pixels
 convert 1/o.png -crop 1x1 1/%d.png
-#get image width
-width=$(identify -format '%w' 1/o.png)
 #get black pixels
-cd 1
+cd 1 || exit
 rawnumbers=$(find . -size 360c -printf '%f\n' | sed -e 's/\.png$//' | xargs -n1 | sort -g | xargs)
-read -a numbers <<< $rawnumbers
-cd ..
+read -a numbers <<< "$rawnumbers"
+cd .. || exit
 identify -format '%h' 1/o.png
 printf "\n"
 #cleanup
@@ -24,7 +23,7 @@ e=0
 numbertoalphabet () {
 let inputnr=$1-$e  # z
 declare -i i=$[ 97+${inputnr} ]
-c=$(printf \\$(printf '%03o' $i))
+c=$(printf "\\$(printf '%03o' $i)")
 printf $c
 let e=$e+26
 }
